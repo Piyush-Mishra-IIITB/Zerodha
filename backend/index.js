@@ -75,7 +75,7 @@ app.post("/login", async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    res.json({ message: "Login successful", token });
+    res.json({ message: "Login successful", token,name: user.name, });
 
   } catch (err) {
     console.log(err);
@@ -86,7 +86,7 @@ app.post("/login", async (req, res) => {
 // ---------------- PROTECTED ROUTES ----------------
 
 // GET HOLDINGS
-app.get("/allHoldings", authMiddleware, async (req, res) => {
+app.get("/allHoldings", async (req, res) => {
   const allHoldings = await HoldingsModel.find({});
   res.json(allHoldings);
 });
@@ -98,13 +98,13 @@ app.get("/allPositions",  async (req, res) => {
 });
 
 // GET ORDERS
-app.get("/allOrders", authMiddleware, async (req, res) => {
+app.get("/allOrders", async (req, res) => {
   const allOrders = await OrdersModel.find({});
   res.json(allOrders);
 });
 
 // PLACE ORDER (BUY/SELL)
-app.post("/newOrder", authMiddleware, async (req, res) => {
+app.post("/newOrder", async (req, res) => {
   try {
     const { name, qty, price, mode } = req.body;
 
