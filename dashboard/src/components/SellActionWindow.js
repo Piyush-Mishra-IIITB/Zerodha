@@ -1,0 +1,95 @@
+import React, { useState, useContext } from "react";
+import api from "../api";
+import GeneralContext from "./GeneralContext";
+import "./BuyActionWindow.css"; // reuse same styling
+
+const SellActionWindow = ({ uid }) => {
+  const [stockQuantity, setStockQuantity] = useState(1);
+  const [stockPrice, setStockPrice] = useState(0);
+  const [loading, setLoading] = useState(false);
+
+  const { closeSellWindow } = useContext(GeneralContext);
+
+  const handleSellClick = async () => {
+
+    // ✅ Validation
+    if (stockQuantity <= 0 || stockPrice <= 0) {
+      alert("Quantity and Price must be greater than zero");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      await api.post("/newOrder", {
+        name: uid,
+        qty: Number(stockQuantity),
+        price: Number(stockPrice),
+        mode: "SELL",
+      });
+
+      closeSellWindow();
+
+    } catch (err) {
+      alert(err.response?.data?.error || "Sell failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="container" id="buy-window">
+      <div className="regular-order">
+        <div className="inputs">
+
+          <fieldset>
+            <legend>Qty.</legend>
+            <input
+              type="number"
+              min="1"
+              value={stockQuantity}
+              onChange={(e) => setStockQuantity(e.target.value)}
+            />
+          </fieldset>
+
+          <fieldset>
+            <legend>Price</legend>
+            <input
+              type="number"
+              min="1"
+              value={stockPrice}
+              onChange={(e) => setStockPrice(e.target.value)}
+            />
+          </fieldset>
+
+        </div>
+      </div>
+
+      <div className="buttons">
+        <span>
+          Margin required ₹{(stockQuantity * stockPrice).toFixed(2)}
+        </span>
+
+        <div>
+          <button
+            className="btn btn-red"
+            onClick={handleSellClick}
+            disabled={loading}
+          >
+            {loading ? "Selling..." : "Sell"}
+          </button>
+
+          <button
+            className="btn btn-grey"
+            onClick={closeSellWindow}
+            disabled={loading}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default SellActionWindow;
