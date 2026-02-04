@@ -24,6 +24,8 @@ const Login = () => {
 
       // ✅ Save token
       localStorage.setItem("token", res.data.token);
+      localStorage.setItem("username", res.data.name);
+
 
       // ✅ Confirm saved
       console.log("TOKEN STORED:", localStorage.getItem("token"));
